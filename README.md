@@ -1,2 +1,2 @@
 # stcs6701_final_project
-Final project for STCS6701
+This is the final project materials for Probabilisitic Models
