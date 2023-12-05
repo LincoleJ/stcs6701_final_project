@@ -1,2 +1,1 @@
-# stcs6701_final_project
-This is the final project materials for Probabilisitic Models
+Final Project: Probabilistic Models and Machine Learning (STCS6701)
