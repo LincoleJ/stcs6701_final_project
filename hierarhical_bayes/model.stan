@@ -12,9 +12,9 @@ parameters {
 }
 
 model {
-  lambda ~ gamma(2, 0.1);     // hyperprior
+  lambda ~ gamma(1, 1);     // hyperprior
   for (i in 1:10) {
-    beta[:, i] ~ normal(0, lambda); // priors for group coefficients
+    beta[:, i] ~ normal(0, lambda^2); // priors for group coefficients
   }
   
   for (j in 1:N) {
@@ -24,11 +24,27 @@ model {
 }
 
 
-
 // generated quantities {
 //     vector[N] y_pred;     // posterior predictive
 //     for (j in 1:N) { 
 //         y_pred[j] = bernoulli_logit_rng(X[j] * beta[:, group[j]]);
 //     }
 // }
+
+generated quantities {
+    real log_joint_for_generated_quantities = 0;
+
+    // log likelihood for the generated quantities
+    for (j in 1:N) {
+        log_joint_for_generated_quantities += bernoulli_logit_lpmf(Y[j] | X[j] * beta[:, group[j]]);
+    }
+
+    // include contribution from priorrs
+    for (i in 1:10) {
+        log_joint_for_generated_quantities += normal_lpdf(beta[:, i] | 0, lambda);
+    }
+    log_joint_for_generated_quantities += gamma_lpdf(lambda | 1, 1);
+}
+
+
 

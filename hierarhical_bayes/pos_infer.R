@@ -44,6 +44,7 @@ df$demo_race = factor(df$demo_race, levels = c("Non-Hispanic White", "Hispanic",
                                                "Non-Hispanic Asian"))
 df_mtx = model.matrix(bp_control_jnc7 ~ ., data = df)[, -1] %>% 
   janitor::clean_names()
+write.csv(df, "./data/processed_df.csv")
 group_var = as.integer(df$svy_year)
 stan_df = list(N = nrow(df_mtx),
                P = ncol(df_mtx) - 1,
