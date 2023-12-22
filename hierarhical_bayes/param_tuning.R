@@ -200,7 +200,7 @@ generate_predictions <- function(X, group, posterior_samples) {
 
 # Generate predictions for training and test datasets
 train_predictions <- generate_predictions(train_x, group_var, posterior_samples)
-test_predictions <- generate_predictions(test_X, test_group, posterior_samples)
+test_predictions <- generate_predictions(test_x, test_group_var, posterior_samples)
 
 
 # plot log probability against number of iterations
