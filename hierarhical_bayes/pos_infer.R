@@ -5,13 +5,8 @@ library(rstan)
 library(ggplot2)
 library(bayesplot)
 
-library(rstudioapi)
-current_path <- getActiveDocumentContext()$path
-setwd(dirname(current_path))
-
-
 # data wrangling for rstan
-df = read_csv("../data/df.csv")[-1] %>%
+df = read_csv("./data/df.csv")[-1] %>%
   mutate(svy_year = case_when(svy_year == "1999-2000" ~ 1,
                               svy_year == "2001-2002" ~ 2,
                               svy_year == "2003-2004" ~ 3, 
@@ -49,7 +44,7 @@ df$demo_race = factor(df$demo_race, levels = c("Non-Hispanic White", "Hispanic",
                                                "Non-Hispanic Asian"))
 df_mtx = model.matrix(bp_control_jnc7 ~ ., data = df)[, -1] %>% 
   janitor::clean_names()
-write.csv(df, "../data/processed_df.csv")
+write.csv(df, "./data/processed_df.csv")
 group_var = as.integer(df$svy_year)
 stan_df = list(N = nrow(df_mtx),
                P = ncol(df_mtx) - 1,
@@ -59,7 +54,7 @@ stan_df = list(N = nrow(df_mtx),
                Y = df$bp_control_jnc7)
 
 # run ADVI
-m1_stan = stan_model(file = "./model.stan")
+m1_stan = stan_model(file = "./hierarhical_bayes/model.stan")
 fit_advi <- vb(m1_stan,
                data = stan_df,
                iter = 10000,
@@ -69,10 +64,10 @@ print(fit_advi)
 ## switch to MCMC
 
 # run MCMC
-fit_mcmc <- stan("./model.stan", 
+fit_mcmc <- stan("./hierarhical_bayes/model.stan", 
                  data = stan_df, 
-                 iter = 10000, 
-                 warmup = 2000,
+                 iter = 3000, 
+                 warmup = 1000,
                  chains = 4)
 
 # convergence diagnostics
@@ -130,8 +125,3 @@ cc_betas = betas_df[36:47, ] %>%
   theme_minimal() +
   labs(x = "Survey Period", y = "Odds Ratio of BP Control", color = "Covariate",
        title = "B.P. Control v.s. Comorbidity Covariates")
-
-
-
-
-

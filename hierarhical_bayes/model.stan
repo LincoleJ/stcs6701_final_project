@@ -12,7 +12,7 @@ parameters {
 }
 
 model {
-  lambda ~ gamma(1, 1);     // hyperprior
+  lambda ~ gamma(10^{-2}, 1);     // hyperprior
   for (i in 1:10) {
     beta[:, i] ~ normal(0, lambda^2); // priors for group coefficients
   }
@@ -41,9 +41,9 @@ generated quantities {
 
     // include contribution from priorrs
     for (i in 1:10) {
-        log_joint_for_generated_quantities += normal_lpdf(beta[:, i] | 0, lambda);
+        log_joint_for_generated_quantities += normal_lpdf(beta[:, i] | 0, lambda^2);
     }
-    log_joint_for_generated_quantities += gamma_lpdf(lambda | 1, 1);
+    log_joint_for_generated_quantities += gamma_lpdf(lambda | 10^{-2}, 1);
 }
 
 
